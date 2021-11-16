@@ -1,15 +1,8 @@
-object Chess { // column and row
-  type Column = Int
-  type Row = Int
+object Chess {
 
-  type Position = (Column, Row)
+  // type definitions
+  type Position = (Int, Int) // (col, row)
   type Board = Map[Position, Piece]
-  final case class Piece(
-      pieceType: PieceType,
-      pieceColor: PieceColor,
-      pieceState: PieceState,
-      signature: String
-  )
 
   sealed trait PieceColor
   case object White extends PieceColor
@@ -28,14 +21,16 @@ object Chess { // column and row
   case object Knight extends PieceType
   case object Pawn extends PieceType
 
-  final case class State(
-      board: Board,
-      whitePlayer: Player,
-      blackPlayer: Player,
-      currentColor: PieceColor
+  final case class Piece(
+      pieceType: PieceType,
+      pieceColor: PieceColor,
+      pieceState: PieceState,
+      signature: String
   )
-  final case class Player(pieceColor: PieceColor, pieceCaptured: Seq[Piece])
 
+  final case class State(board: Board, currentColor: PieceColor)
+
+  // utility functions to update the board
   def setPiece(position: Position, piece: Piece, board: Board): Board =
     board + (position -> piece)
 
@@ -67,18 +62,10 @@ object Chess { // column and row
       finalPosition: Position,
       state: State
   ): Boolean =
-    val i = piece.pieceColor == state.currentColor
-    val ii = (distance(
-      initialPosition,
-      finalPosition
-    ) > 0)
-    val iii = (getPiece(initialPosition, state.board).isDefined)
-    val iiii = validMove(
-      piece,
-      initialPosition,
-      finalPosition
-    )
-    i && ii && iii && iiii
+    val turnCorrect = piece.pieceColor == state.currentColor
+    val distAtLeast1 = distance(initialPosition, finalPosition) > 0
+    val pieceExists = getPiece(initialPosition, state.board).isDefined
+    turnCorrect && distAtLeast1 && pieceExists
 
   def isMove(
       piece: Piece,
@@ -86,21 +73,12 @@ object Chess { // column and row
       finalPosition: Position,
       state: State
   ): Boolean =
-    val i = isValid(piece, initialPosition, finalPosition, state)
-    val ii = isPathClear(
-      state.board,
-      initialPosition,
-      finalPosition,
-      piece
-    )
-    val iii = getPiece(finalPosition, state.board).isEmpty
-    val iiii = validMove(
-      piece,
-      initialPosition,
-      finalPosition
-    )
-
-    i && ii && iii && iiii
+    val valid = isValid(piece, initialPosition, finalPosition, state)
+    val pathIsClear =
+      isPathClear(state.board, initialPosition, finalPosition, piece)
+    val finalSquareIsEmpty = getPiece(finalPosition, state.board).isEmpty
+    val moveIsValid = validMove(piece, initialPosition, finalPosition)
+    valid && pathIsClear && finalSquareIsEmpty && moveIsValid
 
   def isCapture(
       piece: Piece,
@@ -254,15 +232,19 @@ object Chess { // column and row
               finalPosition,
               state
             )) =>
-        val newBoard = updatePiece(
+        val boardAfterMove = updatePiece(
           stepPieceState(initialPosition, finalPosition, piece.get),
           initialPosition,
           board
         )
-        val ss = movePiece(initialPosition, finalPosition, newBoard).map(b =>
-          stepCurrent(state).copy(board = b)
-        )
-        ss
+
+        val stateAfterMove =
+          movePiece(initialPosition, finalPosition, boardAfterMove).map(b =>
+            state.copy(board = b)
+          )
+
+        if stateAfterMove.filter(s => isCheck(s)).nonEmpty then None
+        else stateAfterMove.map(s => stepCurrent(s))
       case _ => None
     }
 
@@ -291,7 +273,10 @@ object Chess { // column and row
       println(separator)
     )
     println(filesRow)
-    println(s"check: ${isCheck(state).toString}")
+    println(
+      s"${state.currentColor} player ${if isCheck(state) then "is in check!"
+      else "not in check."}"
+    )
     println()
 
   def initialState: State =
@@ -334,8 +319,6 @@ object Chess { // column and row
         ((7, 7), Piece(Pawn, Black, Init, "p")),
         ((8, 7), Piece(Pawn, Black, Init, "p"))
       ),
-      whitePlayer = Player(White, Nil),
-      blackPlayer = Player(Black, Nil),
       currentColor = White
     )
 
