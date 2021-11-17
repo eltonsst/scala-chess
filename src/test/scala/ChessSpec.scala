@@ -91,5 +91,43 @@ class ChessSpec extends AnyWordSpec with Matchers {
       )
       stepBoard((5, 2), (5, 4), s) shouldBe None
     }
+
+    "not move the king near the other one" in {
+      val s = State(
+        board = Map[Position, Piece](
+          ((5, 1), Piece(King, White, Moved, "K")),
+          ((5, 3), Piece(Pawn, White, Moved, "P")),
+          ((7, 1), Piece(King, Black, Moved, "k"))
+        ),
+        currentColor = Black
+      )
+      stepBoard((7, 1), (6, 1), s) shouldBe None
+    }
+
+    "return a clear path for a knight in an initial state" in {
+      isPathClear(
+        initialState.board,
+        (2, 1),
+        (3, 2),
+        Piece(Knight, White, Init, "N")
+      ) shouldBe true
+    }
+
+    "not return a clear path for a rook in an initial state" in {
+      isPathClear(
+        initialState.board,
+        (1, 1),
+        (1, 5),
+        Piece(Rook, White, Init, "R")
+      ) shouldBe false
+    }
+
+    "return true when capturing diagonally with a pawn" in {
+      isValidCapture(
+        Piece(Pawn, White, Moved, "P"),
+        (5, 3),
+        (6, 4)
+      ) shouldBe true
+    }
   }
 }

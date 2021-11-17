@@ -1,3 +1,4 @@
+import scala.annotation.tailrec
 object Chess {
 
   // type definitions
@@ -152,11 +153,11 @@ object Chess {
       finalPosition: Position
   ): Boolean =
     piece match {
-      case Piece(Pawn, Black, _, _) =>
+      case Piece(Pawn, White, _, _) => // (5,3) => (6,4)
         (finalPosition._2 - initialPosition._2) == 1 && Math.abs(
           finalPosition._1 - initialPosition._1
         ) == 1
-      case Piece(Pawn, White, _, _) =>
+      case Piece(Pawn, Black, _, _) => // (6,4) => (5,3)
         (initialPosition._2 - finalPosition._2) == 1 && Math.abs(
           finalPosition._1 - initialPosition._1
         ) == 1
@@ -326,6 +327,7 @@ object Chess {
       currentColor = White
     )
 
+  @tailrec
   private def playRec(
       moves: List[(Position, Position)],
       state: State

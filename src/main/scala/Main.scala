@@ -19,7 +19,7 @@ def readMoves(
       Nil
 
 @main def main: Unit =
-  val userInput = new UserInputFile("./data/sample-moves.txt")
+  val userInput = new UserInputFile("./data/checkmate.txt")
   val moves = readMoves(userInput, Nil)
   println(moves) // logging purpose
   play(moves)
