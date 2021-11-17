@@ -89,7 +89,11 @@ object Chess {
     isValid(piece, initialPosition, finalPosition, state) &&
       isPathClear(state.board, initialPosition, finalPosition, piece) &&
       getPiece(finalPosition, state.board).isDefined &&
-      getPiece(finalPosition, state.board).get.pieceColor != state.currentColor
+      getPiece(
+        finalPosition,
+        state.board
+      ).get.pieceColor != state.currentColor &&
+      isValidCapture(piece, initialPosition, finalPosition)
 
   def stepPieceState(
       initialPosition: Position,
@@ -323,7 +327,9 @@ object Chess {
     )
 
   def play(moves: List[(Position, Position)], state: State): Option[State] =
-    if moves.isEmpty then Some(state)
+    if moves.isEmpty then
+      println("no more moves to execute.")
+      Some(state)
     else
       val newState = stepBoard(moves.head._1, moves.head._2, state)
       newState match {

@@ -22,4 +22,5 @@ def readMoves(
   val userInput = new UserInputFile("./data/default.txt")
   val moves = readMoves(userInput, Nil)
   println(moves)
+  print(initialState) // logging purpose
   play(moves, initialState)
