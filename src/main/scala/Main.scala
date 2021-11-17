@@ -18,9 +18,8 @@ def readMoves(
       println(s"error while reading moves: ${e.getMessage}")
       Nil
 
-@main def hello: Unit =
-  val userInput = new UserInputFile("./data/default.txt")
+@main def main: Unit =
+  val userInput = new UserInputFile("./data/sample-moves.txt")
   val moves = readMoves(userInput, Nil)
-  println(moves)
-  print(initialState) // logging purpose
-  play(moves, initialState)
+  println(moves) // logging purpose
+  play(moves)

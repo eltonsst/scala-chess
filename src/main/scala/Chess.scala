@@ -326,7 +326,10 @@ object Chess {
       currentColor = White
     )
 
-  def play(moves: List[(Position, Position)], state: State): Option[State] =
+  private def playRec(
+      moves: List[(Position, Position)],
+      state: State
+  ): Option[State] =
     if moves.isEmpty then
       println("no more moves to execute.")
       Some(state)
@@ -335,9 +338,13 @@ object Chess {
       newState match {
         case Some(s) =>
           print(s)
-          play(moves.tail, s)
+          playRec(moves.tail, s)
         case None =>
-          play(moves.tail, state)
+          playRec(moves.tail, state)
       }
+
+  def play(moves: List[(Position, Position)]): Option[State] =
+    print(initialState)
+    playRec(moves, initialState)
 
 }
