@@ -31,10 +31,9 @@ The program should simply read in moves and validate them, tracking and showing 
 - For pieces other than the knight disallow the move if there are any other pieces in the way between the start and end square.
 - If a move ends with a player’s king under attack that is “check”
 - A player cannot end their own move in check
-- If a player starts their move in check this should be displayed as “in check”
+- If a player starts their move in check this should be displayed as “in check”.
 
-
-## Solution 
+## Solution 
 
 First of all, I started by defining types:
 
@@ -46,7 +45,7 @@ Then, I defined some useful functions to operate on a piece on the board, just t
 
 Finally, I structured the solution around recursion and an extensive use of pattern matching to do all kinds of checks to a piece that is being moved, or if it's capturing something. For each piece I evaluated all the moves that can be performed assuming that the board is empty (validMove()) and if the path is also clear. 
 
-In a first moment, I was tempted to try cats and use the state monad to handle the board state but then I thinked that it was a bit overkilling.
+In a first moment, I was tempted to try cats and use the state monad to handle the board state but then I thought that it was a bit overkilling.
 
 The game is printed step by step in ASCII form like requested and it is also displayed if a player is in check.
 
